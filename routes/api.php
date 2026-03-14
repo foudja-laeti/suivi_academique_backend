@@ -13,6 +13,10 @@ use App\Http\Controllers\AuthController;
 
 
 Route::post('/login',[AuthController::class, 'login']);
+Route::apiResource("personnels", PersonnelController::class);
+ Route::apiResource("filieres", FiliereController::class, [
+    'only' => ['index','store','show','update','destroy']
+    ]);
 // Route::apiResource("personnels", PersonnelController::class);
 // Route::apiResource("filieres", FiliereController::class, [
 //     'only' => ['index','store','show','update','destroy']
@@ -25,9 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource("ec", EcController::class);
     Route::apiResource("salles", SalleController::class);
     Route::apiResource("programmations", ProgrammationController::class);
-    Route::apiResource("personnels", PersonnelController::class);
-    Route::apiResource("filieres", FiliereController::class, [
-    'only' => ['index','store','show','update','destroy']
-    ]);
+
+
 });
 
