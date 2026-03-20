@@ -41,7 +41,15 @@ class UeController extends Controller
      */
 public function show(Ue $ue)
 {
-    return response()->json(['data' => $ue->attributesToArray()], 200);
+    try {
+        return response()->json(['data' => $ue->attributesToArray()], 200);
+    } catch (\Throwable $th) {
+        return response()->json([ // ✅ debug
+            'message' => $th->getMessage(),
+            'file'    => $th->getFile(),
+            'line'    => $th->getLine(),
+        ], 500);
+    }
 }
 
 public function update(Request $request, Ue $ue)
@@ -60,9 +68,14 @@ public function update(Request $request, Ue $ue)
 
         return response()->json(['message' => 'UE mis à jour', 'data' => $ue->attributesToArray()], 200);
     } catch (\Throwable $th) {
-        return response()->json(['message' => $th->getMessage()], 500);
+        return response()->json([ // ✅ debug
+            'message' => $th->getMessage(),
+            'file'    => $th->getFile(),
+            'line'    => $th->getLine(),
+        ], 500);
     }
 }
+
 public function destroy(Ue $ue)
 {
     try {
