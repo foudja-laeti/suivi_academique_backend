@@ -2,11 +2,16 @@
 
 namespace Tests\Traits;
 
+use App\Models\Personnel;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
 trait ApiTokenTrait
 {
     protected function getApiToken(): string
     {
-        return '2|VoU41upsBddLLFYQJqLS4B0tbPbO7oRcbK288t842b86818e';
+        $personnel = Personnel::factory()->create();
+        $token = $personnel->createToken('test-token')->plainTextToken;
+        return $token;
     }
 
     protected function withApiTokenHeaders(array $additionalHeaders = []): array
@@ -16,4 +21,3 @@ trait ApiTokenTrait
         ]);
     }
 }
-//tests/Traits/ApiTokenTrait.php
