@@ -98,8 +98,13 @@ class ProgrammationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Programmation $programmation)
-    {
-        //
+   public function destroy(Programmation $programmation)
+{
+    try {
+        $programmation->delete();
+        return response()->json(['message' => 'Programmation supprimée avec succès'], 200);
+    } catch (\Throwable $th) {
+        return response()->json(['message' => $th->getMessage()], 500);
     }
+}
 }

@@ -39,9 +39,9 @@ class UeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Ue $ue)
+   public function show(Ue $ue)
 {
-    return response()->json(['data' => $ue], 200);
+    return response()->json(['data' => $ue->toArray()], 200); // ✅
 }
 
 public function update(Request $request, Ue $ue)
@@ -54,9 +54,9 @@ public function update(Request $request, Ue $ue)
         ]);
 
         $ue->update($validateData);
-        $ue->refresh(); // ✅ recharge les données
+        $ue->refresh();
 
-        return response()->json(['message' => 'UE mis à jour', 'data' => $ue], 200);
+        return response()->json(['message' => 'UE mis à jour', 'data' => $ue->toArray()], 200); // ✅
     } catch (\Throwable $th) {
         return response()->json(['message' => $th->getMessage()], 500);
     }

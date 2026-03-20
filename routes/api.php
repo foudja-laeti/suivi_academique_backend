@@ -30,6 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource("salles", SalleController::class);
     Route::apiResource("programmations", ProgrammationController::class);
 
-
+Route::post('/enseignes', [EnseigneController::class, 'store']);
+Route::put('/enseignes/{code_pers}/{code_ec}', [EnseigneController::class, 'update']);
+Route::delete('/enseignes/{code_pers}/{code_ec}', [EnseigneController::class, 'destroy']);
 });
 
