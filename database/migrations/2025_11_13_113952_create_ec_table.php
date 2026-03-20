@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('nbh_ec');
             $table->integer('nbc_ec');
             $table->string('code_ue', 20);
-            $table->foreign('code_ue')->references('code_ue')->on('ue')->onDelete('cascade');
+            $table->foreign('code_ue')->references('code_ue')->on('ues')->onDelete('cascade');
             $table->timestamps();
         });
     }
