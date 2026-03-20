@@ -14,14 +14,14 @@ class PersonnelTest extends TestCase
     public function test_create_personnel()
     {
         $personnelData = [
-            'code_pers'  => 'PERS101',
-            'nom_pers'   => 'Jean Dupont',
-            'sexe_pers'  => 'Masculin',
-            'phone_pers' => '690123456',
-            'login_pers' => 'jeandupont',
-            'pwd_pers'   => 'password123',
-            'type_pers'  => 'Administrateur',
-        ];
+    'code_pers'  => 'PERS101',
+    'nom_pers'   => 'Jean Dupont',
+    'sexe_pers'  => 'Masculin',
+    'phone_pers' => '690123456',
+    'login_pers' => 'jeandupont',
+    'pwd_pers'   => 'password123',
+    'type_pers'  => 'ENSEIGNANT', // ✅ valeur valide
+];
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
                          ->postJson('/api/personnels', $personnelData);

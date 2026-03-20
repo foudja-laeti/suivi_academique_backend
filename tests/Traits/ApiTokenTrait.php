@@ -3,15 +3,17 @@
 namespace Tests\Traits;
 
 use App\Models\Personnel;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 trait ApiTokenTrait
 {
+    protected ?Personnel $authPersonnel = null;
+
     protected function getApiToken(): string
     {
-        $personnel = Personnel::factory()->create();
-        $token = $personnel->createToken('test-token')->plainTextToken;
-        return $token;
+        if (!$this->authPersonnel) {
+            $this->authPersonnel = Personnel::factory()->create();
+        }
+        return $this->authPersonnel->createToken('test-token')->plainTextToken;
     }
 
     protected function withApiTokenHeaders(array $additionalHeaders = []): array
