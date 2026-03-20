@@ -41,7 +41,11 @@ class UeController extends Controller
      */
 public function show(Ue $ue)
 {
-    return response()->json(['data' => $ue->fresh()->toArray()], 200);
+    $found = Ue::find($ue->code_ue);
+    if (!$found) {
+        return response()->json(['message' => 'UE introuvable'], 404);
+    }
+    return response()->json(['data' => $found], 200);
 }
 
 public function update(Request $request, Ue $ue)
@@ -52,8 +56,11 @@ public function update(Request $request, Ue $ue)
             'desc_ue'     => 'sometimes|nullable|string',
             'code_niveau' => 'sometimes|exists:niveaux,code_niveau',
         ]);
-        $ue->fill($validateData)->save();
-        return response()->json(['message' => 'UE mis à jour', 'data' => $ue->fresh()->toArray()], 200);
+
+        $ue->update($validateData);
+        $found = Ue::find($ue->code_ue); // ✅
+
+        return response()->json(['message' => 'UE mis à jour', 'data' => $found], 200);
     } catch (\Throwable $th) {
         return response()->json(['message' => $th->getMessage()], 500);
     }
