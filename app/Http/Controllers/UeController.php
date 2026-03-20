@@ -40,23 +40,34 @@ class UeController extends Controller
      * Display the specified resource.
      */
     public function show(Ue $ue)
-    {
-        //
-    }
+{
+    return response()->json(['data' => $ue], 200);
+}
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Ue $ue)
-    {
-        //
-    }
+public function update(Request $request, Ue $ue)
+{
+    try {
+        $validateData = $request->validate([
+            'label_ue'    => 'sometimes|string',
+            'desc_ue'     => 'sometimes|nullable|string',
+            'code_niveau' => 'sometimes|exists:niveaux,code_niveau',
+        ]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Ue $ue)
-    {
-        //
+        $ue->update($validateData);
+
+        return response()->json(['message' => 'UE mis à jour', 'data' => $ue], 200);
+    } catch (\Throwable $th) {
+        return response()->json(['message' => $th->getMessage()], 500);
     }
+}
+
+public function destroy(Ue $ue)
+{
+    try {
+        $ue->delete();
+        return response()->json(['message' => 'UE supprimé avec succès'], 200);
+    } catch (\Throwable $th) {
+        return response()->json(['message' => $th->getMessage()], 500);
+    }
+}
 }

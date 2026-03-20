@@ -17,8 +17,10 @@ class EnseigneFactory extends Factory
     public function definition(): array
 {
     return [
-        'code_ec'   => \App\Models\Ec::factory(),        // ✅
-        'code_pers' => \App\Models\Personnel::factory(), // ✅
+        'id'       => (string) \Illuminate\Support\Str::uuid(), // ✅
+        'code_pers' => \App\Models\Personnel::factory(),
+        'code_ec'   => \App\Models\Ec::factory(),
+        'date_ens'  => \Illuminate\Support\Facades\Date::now()->toDateString(),
     ];
 }
 }

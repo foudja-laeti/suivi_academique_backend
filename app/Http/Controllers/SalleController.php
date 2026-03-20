@@ -29,7 +29,7 @@ class SalleController extends Controller
             ]);
             $res=Salle::create($validateData);
             return response()->json(["message"=> "Salle crée avec succès",'data'=>$res],201);
-        } 
+        }
         catch (\Throwable $th) {
             return response()->json(['message'=>$th->getMessage()]);
         }
@@ -90,7 +90,12 @@ class SalleController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(Salle $salle)
-    {
-        //
+{
+    try {
+        $salle->delete();
+        return response()->json(['message' => 'Salle supprimée avec succès'], 200);
+    } catch (\Throwable $th) {
+        return response()->json(['message' => $th->getMessage()], 500);
     }
+}
 }

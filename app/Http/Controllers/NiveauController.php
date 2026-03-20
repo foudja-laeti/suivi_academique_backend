@@ -15,7 +15,7 @@ class NiveauController extends Controller
         $niveaux = Niveau::all();
         return response()->json($niveaux, 200);
     }
-    
+
 
     /**
      * Store a newly created resource in storage.
@@ -47,22 +47,30 @@ class NiveauController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Niveau $niveau)
-    {
-        //
-    }
+   public function update(Request $request, Niveau $niveau)
+{
+    try {
+        $validateData = $request->validate([
+            'label_niveau' => 'sometimes|string',
+            'desc_niveau'  => 'sometimes|string',
+            'code_filiere' => 'sometimes|string|exists:filieres,code_filiere',
+        ]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Niveau $niveau)
-    {
-        try {
-            $niveau = Niveau::findOrFail($niveau->code_niveau);
-            $niveau->delete();
-            return response()->json(["message" => "Suppression du niveau réussie"], 200);
-        } catch (\Throwable $th) {
-            return response()->json(['message' => "Niveau non trouvé"], 404);
-        }
+        $niveau->update($validateData);
+
+        return response()->json(['message' => 'Niveau mis à jour', 'data' => $niveau], 200);
+    } catch (\Throwable $th) {
+        return response()->json(['message' => $th->getMessage()], 500);
     }
+}
+
+public function destroy(Niveau $niveau)
+{
+    try {
+        $niveau->delete();
+        return response()->json(['message' => 'Suppression du niveau réussie'], 200);
+    } catch (\Throwable $th) {
+        return response()->json(['message' => $th->getMessage()], 500);
+    }
+}
 }
