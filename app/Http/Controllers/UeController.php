@@ -41,11 +41,7 @@ class UeController extends Controller
      */
 public function show(Ue $ue)
 {
-    $found = Ue::find($ue->code_ue);
-    if (!$found) {
-        return response()->json(['message' => 'UE introuvable'], 404);
-    }
-    return response()->json(['data' => $found], 200);
+    return response()->json(['data' => $ue], 200); // ✅ $ue est déjà résolu par route model binding
 }
 
 public function update(Request $request, Ue $ue)
@@ -58,9 +54,8 @@ public function update(Request $request, Ue $ue)
         ]);
 
         $ue->update($validateData);
-        $found = Ue::find($ue->code_ue); // ✅
 
-        return response()->json(['message' => 'UE mis à jour', 'data' => $found], 200);
+        return response()->json(['message' => 'UE mis à jour', 'data' => $ue], 200); // ✅
     } catch (\Throwable $th) {
         return response()->json(['message' => $th->getMessage()], 500);
     }

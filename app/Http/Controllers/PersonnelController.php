@@ -81,8 +81,8 @@ class PersonnelController extends Controller
         $validateData = $request->validate([
             'nom_pers'   => 'sometimes|string',
             'sexe_pers'  => 'sometimes|string|in:Masculin,Feminin',
-            'phone_pers' => 'sometimes|string|unique:personnels,phone_pers,' . $personnel->id . ',id',
-            'login_pers' => 'sometimes|string|unique:personnels,login_pers,' . $personnel->id . ',id',
+            'phone_pers' => ['sometimes', 'string', Rule::unique('personnels', 'phone_pers')->ignore($personnel->id, 'id')],
+            'login_pers' => ['sometimes', 'string', Rule::unique('personnels', 'login_pers')->ignore($personnel->id, 'id')],
             'pwd_pers'   => 'sometimes|string',
             'type_pers'  => 'sometimes|string',
         ]);
