@@ -79,32 +79,27 @@ class PersonnelController extends Controller
         }
 
         $validateData = $request->validate([
-            'code_pers'  => 'sometimes|string|unique:personnels,code_pers,' . $id . ',id',
             'nom_pers'   => 'sometimes|string',
             'sexe_pers'  => 'sometimes|string|in:Masculin,Feminin',
-            'phone_pers' => 'sometimes|string|unique:personnels,phone_pers,' . $id . ',id',
-            'login_pers' => 'sometimes|string|unique:personnels,login_pers,' . $id . ',id',
+            'phone_pers' => 'sometimes|string|unique:personnels,phone_pers,' . $personnel->id . ',id',
+            'login_pers' => 'sometimes|string|unique:personnels,login_pers,' . $personnel->id . ',id',
             'pwd_pers'   => 'sometimes|string',
             'type_pers'  => 'sometimes|string',
         ]);
 
-        // Hash si le mot de passe est présent
         if (isset($validateData['pwd_pers'])) {
             $validateData['pwd_pers'] = Hash::make($validateData['pwd_pers']);
         }
 
         $personnel->update($validateData);
+        $personnel->refresh();
 
-        return response()->json([
-            'message' => 'Personnel mis à jour avec succès',
-            'data' => $personnel
-        ], 200);
+        return response()->json(['message' => 'Personnel mis à jour avec succès', 'data' => $personnel], 200);
 
     } catch (\Throwable $th) {
         return response()->json(['message' => $th->getMessage()], 500);
     }
 }
-
 
     /**
      * Remove the specified resource from storage.

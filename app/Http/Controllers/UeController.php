@@ -54,6 +54,7 @@ public function update(Request $request, Ue $ue)
         ]);
 
         $ue->update($validateData);
+        $ue->refresh(); // ✅ recharge les données
 
         return response()->json(['message' => 'UE mis à jour', 'data' => $ue], 200);
     } catch (\Throwable $th) {

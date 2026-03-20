@@ -19,10 +19,11 @@ class Enseigne extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'code_pers',
-        'code_ec',
-        'date_ens',
-    ];
+    'id',        // ✅ ajoute ça
+    'code_pers',
+    'code_ec',
+    'date_ens',
+];
 
     public $timestamps = true;
 

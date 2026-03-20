@@ -21,7 +21,7 @@ class ProgrammationFactory extends Factory
         'id'          => (string) Str::uuid(),
         'code_ec'     => \App\Models\Ec::factory(),        // ✅
         'num_salle'   => \App\Models\Salle::factory(),     // ✅
-        'code_pers'   => \App\Models\Personnel::factory(), // ✅
+        'code_pers'   => \App\Models\Personnel::factory()->create()->code_pers,
         'date'        => $this->faker->date(),
         'heure_debut' => $this->faker->time(),
         'heure_fin'   => $this->faker->time(),
