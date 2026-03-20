@@ -97,7 +97,7 @@ class PersonnelController extends Controller
         return response()->json(['message' => 'Personnel mis à jour avec succès', 'data' => $personnel], 200);
 
     } catch (\Throwable $th) {
-        return response()->json(['message' => $th->getMessage()], 500);
+       return response()->json(['message' => $th->getMessage(), 'file' => $th->getFile(), 'line' => $th->getLine()], 500);
     }
 }
 
