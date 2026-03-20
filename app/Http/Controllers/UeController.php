@@ -39,9 +39,9 @@ class UeController extends Controller
     /**
      * Display the specified resource.
      */
-   public function show(Ue $ue)
+public function show(Ue $ue)
 {
-    return response()->json(['data' => $ue->toArray()], 200); // ✅
+    return response()->json(['data' => $ue->fresh()->toArray()], 200);
 }
 
 public function update(Request $request, Ue $ue)
@@ -52,11 +52,8 @@ public function update(Request $request, Ue $ue)
             'desc_ue'     => 'sometimes|nullable|string',
             'code_niveau' => 'sometimes|exists:niveaux,code_niveau',
         ]);
-
-        $ue->update($validateData);
-        $ue->refresh();
-
-        return response()->json(['message' => 'UE mis à jour', 'data' => $ue->toArray()], 200); // ✅
+        $ue->fill($validateData)->save();
+        return response()->json(['message' => 'UE mis à jour', 'data' => $ue->fresh()->toArray()], 200);
     } catch (\Throwable $th) {
         return response()->json(['message' => $th->getMessage()], 500);
     }
