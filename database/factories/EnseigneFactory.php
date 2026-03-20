@@ -15,9 +15,10 @@ class EnseigneFactory extends Factory
      * @return array<string, mixed>
      */
     public function definition(): array
-    {
-        return [
-            //
-        ];
-    }
+{
+    return [
+        'code_ec'   => \App\Models\Ec::factory(),        // ✅
+        'code_pers' => \App\Models\Personnel::factory(), // ✅
+    ];
+}
 }

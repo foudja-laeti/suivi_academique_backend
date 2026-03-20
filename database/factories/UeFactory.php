@@ -15,12 +15,12 @@ class UeFactory extends Factory
      * @return array<string, mixed>
      */
     public function definition(): array
-    {
-        return [
-            'code_ue' => $this->faker->unique()->bothify('UE###'),
-            'label_ue' => $this->faker->words(1,true),
-            'desc_ue' => $this->faker->sentence(),
-            'code_niveau' => \App\Models\Niveau::inRandomOrder()->value('code_niveau'),
-        ];
-    }
+{
+    return [
+        'code_ue'     => $this->faker->unique()->bothify('UE###'),
+        'label_ue'    => $this->faker->words(1, true),
+        'desc_ue'     => $this->faker->sentence(),
+        'code_niveau' => \App\Models\Niveau::factory(),
+    ];
+}
 }

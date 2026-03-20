@@ -14,14 +14,12 @@ class NiveauFactory extends Factory
      *
      * @return array<string, mixed>
      */
-   public function definition(): array
+  public function definition(): array
 {
     return [
-        
         'label_niveau' => $this->faker->words(1, true),
-        'desc_niveau' => $this->faker->words(1, true),
-        // 🔥 Récupère un code existant dans la table filiere
-        'code_filiere' => \App\Models\Filiere::inRandomOrder()->value('code_filiere'),
+        'desc_niveau'  => $this->faker->words(1, true),
+        'code_filiere' => \App\Models\Filiere::factory(), // ✅
     ];
 }
 
