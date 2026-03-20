@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('enseigne', function (Blueprint $table) {
+        Schema::create('enseignes', function (Blueprint $table) {
             // 🔹 ID UUID unique pour chaque ligne
             $table->uuid('id')->primary();
 

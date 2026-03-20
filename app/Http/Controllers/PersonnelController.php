@@ -30,7 +30,7 @@ class PersonnelController extends Controller
                 'phone_pers' => 'required|string|unique:personnels,phone_pers',
                 'login_pers' => 'required|string|unique:personnels,login_pers',
                 'pwd_pers'   => 'required|string',
-                'type_pers'  => 'required|string', 
+                'type_pers'  => 'required|string',
             ]);
 
             $validateData['pwd_pers'] = Hash::make($validateData['pwd_pers']);
@@ -85,7 +85,7 @@ class PersonnelController extends Controller
             'phone_pers' => 'sometimes|string|unique:personnels,phone_pers,' . $id . ',id',
             'login_pers' => 'sometimes|string|unique:personnels,login_pers,' . $id . ',id',
             'pwd_pers'   => 'sometimes|string',
-            'type_pers'  => 'sometimes|string', 
+            'type_pers'  => 'sometimes|string',
         ]);
 
         // Hash si le mot de passe est présent
@@ -109,8 +109,17 @@ class PersonnelController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Personnel $personnel)
-    {
-        //
+   public function destroy($id)
+{
+    try {
+        $personnel = Personnel::find($id);
+        if (!$personnel) {
+            return response()->json(['message' => 'Personnel introuvable'], 404);
+        }
+        $personnel->delete();
+        return response()->json(['message' => 'Personnel supprimé avec succès'], 200);
+    } catch (\Throwable $th) {
+        return response()->json(['message' => $th->getMessage()], 500);
     }
+}
 }
