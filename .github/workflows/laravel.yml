@@ -38,6 +38,9 @@ jobs:
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
+    - name: Run Linting (Laravel Pint)      # ✅ NOUVEAU
+      run: ./vendor/bin/pint --test
+
     - name: Generate key
       run: php artisan key:generate
 
@@ -54,18 +57,6 @@ jobs:
         DB_PASSWORD: root
       run: php artisan migrate --force
 
-    - name: Execute failing tests with verbose output
-      env:
-        DB_CONNECTION: mysql
-        DB_HOST: 127.0.0.1
-        DB_PORT: 3306
-        DB_DATABASE: suivi_academique_backend
-        DB_USERNAME: root
-        DB_PASSWORD: root
-        APP_DEBUG: true
-      run: |
-        php artisan test --filter="test_update_ue|test_update_personnel" 2>&1 || true
-
     - name: Execute tests
       env:
         DB_CONNECTION: mysql
@@ -75,6 +66,3 @@ jobs:
         DB_USERNAME: root
         DB_PASSWORD: root
       run: php artisan test
-      
-    - name: Run Linting (Laravel Pint)
-  run: ./vendor/bin/pint --test
