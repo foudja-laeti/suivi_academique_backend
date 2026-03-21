@@ -54,6 +54,13 @@ public function show(Ue $ue)
 public function update(Request $request, Ue $ue)
 {
     try {
+        // DEBUG TEMPORAIRE
+        \Log::info('UE reçu:', ['ue' => $ue->toArray(), 'key' => $ue->getKey()]);
+
+        $found = Ue::find($ue->getKey());
+        \Log::info('UE trouvé en DB:', ['found' => $found ? $found->toArray() : null]);
+
+        
         $validateData = $request->validate([
             'label_ue'    => 'sometimes|string',
             'desc_ue'     => 'sometimes|nullable|string',

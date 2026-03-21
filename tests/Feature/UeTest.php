@@ -53,7 +53,8 @@ class UeTest extends TestCase
             'label_ue' => 'UE Mis à Jour',
             'desc_ue' => 'Description mise à jour',
         ];
-
+dump($ue->code_ue); // ← ajoute ici
+dump($ue->toArray()); // ← et ici
         $response = $this->withHeaders($this->withApiTokenHeaders())
                          ->putJson("/api/Ue/{$ue->code_ue}", $updateData);
 dump($response->json()); // ← ajoute ici
