@@ -1,8 +1,10 @@
 FROM php:8.4-apache
 
-# Désactiver les MPM en conflit et activer mpm_prefork
-RUN a2dismod mpm_event mpm_worker 2>/dev/null || true \
-    && a2enmod mpm_prefork rewrite
+# Fixer le problème MPM
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf \
+    && ln -s /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/ \
+    && ln -s /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/ \
+    && ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/
 
 # Installer dépendances système
 RUN apt-get update && apt-get install -y \
@@ -10,36 +12,26 @@ RUN apt-get update && apt-get install -y \
     libpng-dev libonig-dev libxml2-dev libzip-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Extensions PHP nécessaires Laravel
+# Extensions PHP
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Installer Composer
+# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copier les fichiers de dépendances
 COPY composer.json composer.lock ./
-
-# Installer dépendances Laravel
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
-# Copier le reste du projet
 COPY . .
-
-# Générer l'autoload optimisé
 RUN composer dump-autoload --optimize
 
-# Permissions Laravel
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 storage bootstrap/cache
 
-# Configurer Apache pour pointer vers /public
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/sites-available/*.conf \
-    /etc/apache2/apache2.conf
+# Apache document root vers /public
+RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' \
+    /etc/apache2/sites-available/000-default.conf
 
 EXPOSE 80
-
 CMD ["apache2-foreground"]
