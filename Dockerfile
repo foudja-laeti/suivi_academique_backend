@@ -21,6 +21,9 @@ RUN composer dump-autoload --optimize
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 storage bootstrap/cache
 
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 EXPOSE 8080
 
-CMD ["sh", "-c", "php artisan config:clear && php artisan migrate --force && exec /init"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
