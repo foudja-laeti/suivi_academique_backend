@@ -56,6 +56,7 @@ class UeTest extends TestCase
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
                          ->putJson("/api/Ue/{$ue->code_ue}", $updateData);
+dump($response->json()); // ← ajoute ici
 
         $response->assertStatus(200)
                  ->assertJsonFragment([

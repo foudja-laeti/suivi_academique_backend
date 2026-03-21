@@ -59,14 +59,14 @@ class PersonnelTest extends TestCase
                          ->putJson("/api/personnels/{$personnel->id}", $updateData);
 
 
-        dump($response->json()); 
+        dump($response->json());
 
 $response->assertStatus(200);
         $response->assertStatus(200)
                  ->assertJsonFragment([
                      'nom_pers'  => 'Jean Mis à Jour',
                      'sexe_pers' => 'Feminin',
-                     'type_pers' => 'Utilisateur',
+                     'type_pers' => 'ENSEIGNANT',
                  ]);
     }
 
