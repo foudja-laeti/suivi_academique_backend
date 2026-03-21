@@ -2,15 +2,12 @@ FROM serversideup/php:8.4-fpm-nginx
 
 USER root
 
-# Installer dépendances système
 RUN apt-get update && apt-get install -y \
     libpng-dev libonig-dev libxml2-dev libzip-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Extensions PHP
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
@@ -24,4 +21,5 @@ RUN composer dump-autoload --optimize
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 storage bootstrap/cache
 
+ENV PORT=8080
 EXPOSE 8080
