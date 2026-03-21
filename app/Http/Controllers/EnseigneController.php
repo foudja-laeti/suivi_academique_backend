@@ -13,8 +13,8 @@ class EnseigneController extends Controller
         try {
             $validateData = $request->validate([
                 'code_pers' => 'required|exists:personnels,code_pers',
-                'code_ec'   => 'required|exists:ecs,code_ec',
-                'date_ens'  => 'required|date',
+                'code_ec' => 'required|exists:ecs,code_ec',
+                'date_ens' => 'required|date',
             ]);
 
             $validateData['id'] = (string) Str::uuid(); // ✅ UUID obligatoire
@@ -31,10 +31,10 @@ class EnseigneController extends Controller
     {
         try {
             $enseigne = Enseigne::where('code_pers', $code_pers)
-                                ->where('code_ec', $code_ec)
-                                ->first();
+                ->where('code_ec', $code_ec)
+                ->first();
 
-            if (!$enseigne) {
+            if (! $enseigne) {
                 return response()->json(['message' => 'Enseigne introuvable'], 404);
             }
 
@@ -54,10 +54,10 @@ class EnseigneController extends Controller
     {
         try {
             $enseigne = Enseigne::where('code_pers', $code_pers)
-                                ->where('code_ec', $code_ec)
-                                ->first();
+                ->where('code_ec', $code_ec)
+                ->first();
 
-            if (!$enseigne) {
+            if (! $enseigne) {
                 return response()->json(['message' => 'Enseigne introuvable'], 404);
             }
 

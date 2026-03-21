@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Ue extends Model
 {
     use HasFactory;
 
     protected $table = 'ues';
+
     protected $primaryKey = 'code_ue';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -25,9 +28,9 @@ class Ue extends Model
 
     // ✅ Force le route model binding sur code_ue
     public function getRouteKeyName(): string
-{
-    return 'code_ue';
-}
+    {
+        return 'code_ue';
+    }
 
     public function niveau()
     {

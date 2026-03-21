@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Enseigne extends Model
@@ -11,8 +11,11 @@ class Enseigne extends Model
     use HasFactory;
 
     protected $table = 'enseignes';
+
     protected $primaryKey = 'id'; // ✅ clé primaire = id
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [

@@ -1,7 +1,7 @@
 <?php
 
-use Tests\TestCase;
 use App\Models\Filiere;
+use Tests\TestCase;
 use Tests\Traits\ApiTokenTrait;
 
 class FiliereTest extends TestCase
@@ -13,23 +13,23 @@ class FiliereTest extends TestCase
         $filiere = Filiere::factory()->make();
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->postJson('/api/filieres', [
-                             'code_filiere' => $filiere->code_filiere,
-                             'label_filiere' => $filiere->label_filiere,
-                             'desc_filiere' => $filiere->desc_filiere,
-                         ]);
+            ->postJson('/api/filieres', [
+                'code_filiere' => $filiere->code_filiere,
+                'label_filiere' => $filiere->label_filiere,
+                'desc_filiere' => $filiere->desc_filiere,
+            ]);
 
         $response->assertStatus(201)
-                 ->assertJsonStructure([
-                     'message',
-                     'data' => [
-                         'code_filiere',
-                         'label_filiere',
-                         'desc_filiere',
-                         'created_at',
-                         'updated_at',
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'message',
+                'data' => [
+                    'code_filiere',
+                    'label_filiere',
+                    'desc_filiere',
+                    'created_at',
+                    'updated_at',
+                ],
+            ]);
     }
 
     public function test_update_filiere()
@@ -42,13 +42,13 @@ class FiliereTest extends TestCase
         ];
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->putJson("/api/filieres/{$filiere->code_filiere}", $updateData);
+            ->putJson("/api/filieres/{$filiere->code_filiere}", $updateData);
 
         $response->assertStatus(200)
-                 ->assertJsonFragment([
-                     'label_filiere' => 'Label mis à jour',
-                     'desc_filiere' => 'Description mise à jour',
-                 ]);
+            ->assertJsonFragment([
+                'label_filiere' => 'Label mis à jour',
+                'desc_filiere' => 'Description mise à jour',
+            ]);
     }
 
     public function test_delete_filiere()
@@ -56,9 +56,9 @@ class FiliereTest extends TestCase
         $filiere = Filiere::factory()->create();
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->deleteJson("/api/filieres/{$filiere->code_filiere}");
+            ->deleteJson("/api/filieres/{$filiere->code_filiere}");
 
         $response->assertStatus(200)
-                 ->assertJson(['message' => 'Suppression réussie']);
+            ->assertJson(['message' => 'Suppression réussie']);
     }
 }

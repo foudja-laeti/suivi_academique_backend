@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\Salle;
+use Tests\TestCase;
 use Tests\Traits\ApiTokenTrait;
 
 class SalleTest extends TestCase
@@ -20,19 +20,19 @@ class SalleTest extends TestCase
         ];
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->postJson('/api/salles', $salleData);
+            ->postJson('/api/salles', $salleData);
 
         $response->assertStatus(201)
-                 ->assertJsonStructure([
-                     'message',
-                     'data' => [
-                         'num_salle',
-                         'contenance',
-                         'status',
-                         'created_at',
-                         'updated_at',
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'message',
+                'data' => [
+                    'num_salle',
+                    'contenance',
+                    'status',
+                    'created_at',
+                    'updated_at',
+                ],
+            ]);
     }
 
     /** @test */
@@ -50,13 +50,13 @@ class SalleTest extends TestCase
         ];
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->putJson("/api/salles/{$salle->num_salle}", $updateData);
+            ->putJson("/api/salles/{$salle->num_salle}", $updateData);
 
         $response->assertStatus(200)
-                 ->assertJsonFragment([
-                     'contenance' => 60,
-                     'status' => 'Indisponible',
-                 ]);
+            ->assertJsonFragment([
+                'contenance' => 60,
+                'status' => 'Indisponible',
+            ]);
     }
 
     /** @test */
@@ -69,18 +69,18 @@ class SalleTest extends TestCase
         ]);
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->getJson("/api/salles/{$salle->num_salle}");
+            ->getJson("/api/salles/{$salle->num_salle}");
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'data' => [
-                         'num_salle',
-                         'contenance',
-                         'status',
-                         'created_at',
-                         'updated_at',
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'data' => [
+                    'num_salle',
+                    'contenance',
+                    'status',
+                    'created_at',
+                    'updated_at',
+                ],
+            ]);
     }
 
     /** @test */
@@ -93,9 +93,9 @@ class SalleTest extends TestCase
         ]);
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->deleteJson("/api/salles/{$salle->num_salle}");
+            ->deleteJson("/api/salles/{$salle->num_salle}");
 
         $response->assertStatus(200)
-                 ->assertJson(['message' => 'Salle supprimée avec succès']);
+            ->assertJson(['message' => 'Salle supprimée avec succès']);
     }
 }

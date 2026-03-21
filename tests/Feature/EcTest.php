@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\Ec;
 use App\Models\Ue;
+use Tests\TestCase;
 use Tests\Traits\ApiTokenTrait;
 
 class EcTest extends TestCase
@@ -26,22 +26,22 @@ class EcTest extends TestCase
         ];
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->postJson('/api/ec', $ecData);
+            ->postJson('/api/ec', $ecData);
 
         $response->assertStatus(201)
-                 ->assertJsonStructure([
-                     'message',
-                     'data' => [
-                         'code_ec',
-                         'label_ec',
-                         'desc_ec',
-                         'nbh_ec',
-                         'nbc_ec',
-                         'code_ue',
-                         'created_at',
-                         'updated_at',
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'message',
+                'data' => [
+                    'code_ec',
+                    'label_ec',
+                    'desc_ec',
+                    'nbh_ec',
+                    'nbc_ec',
+                    'code_ue',
+                    'created_at',
+                    'updated_at',
+                ],
+            ]);
     }
 
     /** @test */
@@ -60,15 +60,15 @@ class EcTest extends TestCase
         ];
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->putJson("/api/ec/{$ec->code_ec}", $updateData);
+            ->putJson("/api/ec/{$ec->code_ec}", $updateData);
 
         $response->assertStatus(200)
-                 ->assertJsonFragment([
-                     'label_ec' => 'EC Mis à Jour',
-                     'desc_ec' => 'Description mise à jour',
-                     'nbh_ec' => 25,
-                     'nbc_ec' => 35,
-                 ]);
+            ->assertJsonFragment([
+                'label_ec' => 'EC Mis à Jour',
+                'desc_ec' => 'Description mise à jour',
+                'nbh_ec' => 25,
+                'nbc_ec' => 35,
+            ]);
     }
 
     /** @test */
@@ -80,21 +80,21 @@ class EcTest extends TestCase
         ]);
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->getJson("/api/ec/{$ec->code_ec}");
+            ->getJson("/api/ec/{$ec->code_ec}");
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'data' => [
-                         'code_ec',
-                         'label_ec',
-                         'desc_ec',
-                         'nbh_ec',
-                         'nbc_ec',
-                         'code_ue',
-                         'created_at',
-                         'updated_at',
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'data' => [
+                    'code_ec',
+                    'label_ec',
+                    'desc_ec',
+                    'nbh_ec',
+                    'nbc_ec',
+                    'code_ue',
+                    'created_at',
+                    'updated_at',
+                ],
+            ]);
     }
 
     /** @test */
@@ -106,9 +106,9 @@ class EcTest extends TestCase
         ]);
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->deleteJson("/api/ec/{$ec->code_ec}");
+            ->deleteJson("/api/ec/{$ec->code_ec}");
 
         $response->assertStatus(200)
-                 ->assertJson(['message' => 'EC supprimé avec succès']);
+            ->assertJson(['message' => 'EC supprimé avec succès']);
     }
 }

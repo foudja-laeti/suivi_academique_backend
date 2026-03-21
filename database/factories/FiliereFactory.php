@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Filiere;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Filiere>
+ * @extends Factory<Filiere>
  */
 class FiliereFactory extends Factory
 {
@@ -18,7 +19,7 @@ class FiliereFactory extends Factory
     {
         return [
             'code_filiere' => $this->faker->unique()->bothify('FILIERE###'),
-           'label_filiere' => $this->faker->lexify('Filiere_????'), // ✅ toujours 12 chars
+            'label_filiere' => $this->faker->lexify('Filiere_????'), // ✅ toujours 12 chars
             'desc_filiere' => $this->faker->sentence(),
         ];
     }

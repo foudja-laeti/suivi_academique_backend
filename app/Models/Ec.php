@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;  
 
 class Ec extends Model
 {
@@ -32,12 +32,14 @@ class Ec extends Model
     {
         return $this->belongsTo(Ue::class, 'code_ue', 'code_ue');
     }
+
     public function enseignes()
     {
-       return $this->hasMany(Enseigne::class,'code_ec');
+        return $this->hasMany(Enseigne::class, 'code_ec');
     }
+
     public function programmations()
     {
-       return $this->hasMany(programmations::class,'code_ec');
+        return $this->hasMany(programmations::class, 'code_ec');
     }
 }

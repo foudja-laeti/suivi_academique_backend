@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\Niveau;
 use App\Models\Filiere;
+use App\Models\Niveau;
+use Tests\TestCase;
 use Tests\Traits\ApiTokenTrait;
 
 class NiveauTest extends TestCase
@@ -23,20 +23,20 @@ class NiveauTest extends TestCase
         ];
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->postJson('/api/niveaux', $niveauData);
+            ->postJson('/api/niveaux', $niveauData);
 
         $response->assertStatus(201)
-                 ->assertJsonStructure([
-                     'message',
-                     'data' => [
-                         'code_niveau',
-                         'label_niveau',
-                         'desc_niveau',
-                         'code_filiere',
-                         'created_at',
-                         'updated_at',
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'message',
+                'data' => [
+                    'code_niveau',
+                    'label_niveau',
+                    'desc_niveau',
+                    'code_filiere',
+                    'created_at',
+                    'updated_at',
+                ],
+            ]);
     }
 
     /** @test */
@@ -53,13 +53,13 @@ class NiveauTest extends TestCase
         ];
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->putJson("/api/niveaux/{$niveau->code_niveau}", $updateData);
+            ->putJson("/api/niveaux/{$niveau->code_niveau}", $updateData);
 
         $response->assertStatus(200)
-                 ->assertJsonFragment([
-                     'label_niveau' => 'Niveau Mis à Jour',
-                     'desc_niveau' => 'Description mise à jour',
-                 ]);
+            ->assertJsonFragment([
+                'label_niveau' => 'Niveau Mis à Jour',
+                'desc_niveau' => 'Description mise à jour',
+            ]);
     }
 
     /** @test */
@@ -71,9 +71,9 @@ class NiveauTest extends TestCase
         ]);
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->deleteJson("/api/niveaux/{$niveau->code_niveau}");
+            ->deleteJson("/api/niveaux/{$niveau->code_niveau}");
 
         $response->assertStatus(200)
-                 ->assertJson(['message' => 'Suppression du niveau réussie']);
+            ->assertJson(['message' => 'Suppression du niveau réussie']);
     }
 }

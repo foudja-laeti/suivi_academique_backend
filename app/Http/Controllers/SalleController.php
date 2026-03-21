@@ -21,17 +21,17 @@ class SalleController extends Controller
     public function store(Request $request)
     {
         try {
-            $validateData= $request->validate([
-                'num_salle'=>'required|min:5|string|unique:salles,num_salle',
-                'contenance'=>'required|min:20|integer',
-                'status'=>'required|string|',
+            $validateData = $request->validate([
+                'num_salle' => 'required|min:5|string|unique:salles,num_salle',
+                'contenance' => 'required|min:20|integer',
+                'status' => 'required|string|',
 
             ]);
-            $res=Salle::create($validateData);
-            return response()->json(["message"=> "Salle crée avec succès",'data'=>$res],201);
-        }
-        catch (\Throwable $th) {
-            return response()->json(['message'=>$th->getMessage()]);
+            $res = Salle::create($validateData);
+
+            return response()->json(['message' => 'Salle crée avec succès', 'data' => $res], 201);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()]);
         }
     }
 
@@ -41,19 +41,18 @@ class SalleController extends Controller
     public function show($id)
     {
         try {
-        $salle = Salle::find($id);
+            $salle = Salle::find($id);
 
-        if (!$salle) {
-            return response()->json(['message' => 'Salle introuvable'], 404);
-        }
+            if (! $salle) {
+                return response()->json(['message' => 'Salle introuvable'], 404);
+            }
 
-        return response()->json(['data' => $salle], 200);
+            return response()->json(['data' => $salle], 200);
 
-        }catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage()], 500);
         }
     }
-
 
     /**
      * Update the specified resource in storage.
@@ -61,41 +60,41 @@ class SalleController extends Controller
     public function update(Request $request, $id)
     {
         try {
-        $salle = Salle::find($id);
+            $salle = Salle::find($id);
 
-        if (!$salle) {
-            return response()->json(['message' => 'Salle introuvable'], 404);
-        }
+            if (! $salle) {
+                return response()->json(['message' => 'Salle introuvable'], 404);
+            }
 
-        $validateData = $request->validate([
-            'num_salle' => 'sometimes|string|min:5|unique:salles,num_salle,' . $id . ',id',
-            'contenance' => 'sometimes|integer|min:20',
-            'status' => 'sometimes|string|in:Disponible,Indisponible',
-        ]);
+            $validateData = $request->validate([
+                'num_salle' => 'sometimes|string|min:5|unique:salles,num_salle,'.$id.',id',
+                'contenance' => 'sometimes|integer|min:20',
+                'status' => 'sometimes|string|in:Disponible,Indisponible',
+            ]);
 
-        $salle->update($validateData);
+            $salle->update($validateData);
 
-        return response()->json([
-            "message" => "Salle mise à jour avec succès",
-            "data" => $salle
-        ], 200);
+            return response()->json([
+                'message' => 'Salle mise à jour avec succès',
+                'data' => $salle,
+            ], 200);
 
         } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage()], 500);
         }
     }
 
-
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Salle $salle)
-{
-    try {
-        $salle->delete();
-        return response()->json(['message' => 'Salle supprimée avec succès'], 200);
-    } catch (\Throwable $th) {
-        return response()->json(['message' => $th->getMessage()], 500);
+    {
+        try {
+            $salle->delete();
+
+            return response()->json(['message' => 'Salle supprimée avec succès'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
     }
-}
 }

@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
+use App\Models\Ec;
 use App\Models\Enseigne;
 use App\Models\Personnel;
-use App\Models\Ec;
+use Tests\TestCase;
 use Tests\Traits\ApiTokenTrait;
 
 class EnseigneTest extends TestCase
@@ -18,23 +18,23 @@ class EnseigneTest extends TestCase
         $ec = Ec::factory()->create();
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->postJson('/api/enseignes', [
-                             'code_pers' => $personnel->code_pers,
-                             'code_ec' => $ec->code_ec,
-                             'date_ens' => now()->toDateString(),
-                         ]);
+            ->postJson('/api/enseignes', [
+                'code_pers' => $personnel->code_pers,
+                'code_ec' => $ec->code_ec,
+                'date_ens' => now()->toDateString(),
+            ]);
 
         $response->assertStatus(201)
-                 ->assertJsonStructure([
-                     'message',
-                     'data' => [
-                         'code_pers',
-                         'code_ec',
-                         'date_ens',
-                         'created_at',
-                         'updated_at',
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'message',
+                'data' => [
+                    'code_pers',
+                    'code_ec',
+                    'date_ens',
+                    'created_at',
+                    'updated_at',
+                ],
+            ]);
     }
 
     public function test_update_enseigne()
@@ -53,12 +53,12 @@ class EnseigneTest extends TestCase
         ];
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->putJson("/api/enseignes/{$enseigne->code_pers}/{$enseigne->code_ec}", $updateData);
+            ->putJson("/api/enseignes/{$enseigne->code_pers}/{$enseigne->code_ec}", $updateData);
 
         $response->assertStatus(200)
-                 ->assertJsonFragment([
-                     'date_ens' => $updateData['date_ens'],
-                 ]);
+            ->assertJsonFragment([
+                'date_ens' => $updateData['date_ens'],
+            ]);
     }
 
     public function test_delete_enseigne()
@@ -73,9 +73,9 @@ class EnseigneTest extends TestCase
         ]);
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->deleteJson("/api/enseignes/{$enseigne->code_pers}/{$enseigne->code_ec}");
+            ->deleteJson("/api/enseignes/{$enseigne->code_pers}/{$enseigne->code_ec}");
 
         $response->assertStatus(200)
-                 ->assertJson(['message' => 'Enseigne supprimée avec succès']);
+            ->assertJson(['message' => 'Enseigne supprimée avec succès']);
     }
 }

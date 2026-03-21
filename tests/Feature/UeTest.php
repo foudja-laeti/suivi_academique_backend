@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\Ue;
 use App\Models\Niveau;
+use App\Models\Ue;
+use Tests\TestCase;
 use Tests\Traits\ApiTokenTrait;
 
 class UeTest extends TestCase
@@ -25,20 +25,20 @@ class UeTest extends TestCase
         ];
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->postJson('/api/Ue', $ueData);
+            ->postJson('/api/Ue', $ueData);
 
         $response->assertStatus(201)
-                 ->assertJsonStructure([
-                     'message',
-                     'data' => [
-                         'code_ue',
-                         'label_ue',
-                         'desc_ue',
-                         'code_niveau',
-                         'created_at',
-                         'updated_at',
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'message',
+                'data' => [
+                    'code_ue',
+                    'label_ue',
+                    'desc_ue',
+                    'code_niveau',
+                    'created_at',
+                    'updated_at',
+                ],
+            ]);
     }
 
     /** @test */
@@ -55,14 +55,13 @@ class UeTest extends TestCase
         ];
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->putJson("/api/Ue/{$ue->code_ue}", $updateData);
-
+            ->putJson("/api/Ue/{$ue->code_ue}", $updateData);
 
         $response->assertStatus(200)
-                 ->assertJsonFragment([
-                     'label_ue' => 'UE Mis à Jour',
-                     'desc_ue' => 'Description mise à jour',
-                 ]);
+            ->assertJsonFragment([
+                'label_ue' => 'UE Mis à Jour',
+                'desc_ue' => 'Description mise à jour',
+            ]);
     }
 
     /** @test */
@@ -74,19 +73,19 @@ class UeTest extends TestCase
         ]);
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->getJson("/api/Ue/{$ue->code_ue}");
+            ->getJson("/api/Ue/{$ue->code_ue}");
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'data' => [
-                         'code_ue',
-                         'label_ue',
-                         'desc_ue',
-                         'code_niveau',
-                         'created_at',
-                         'updated_at',
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'data' => [
+                    'code_ue',
+                    'label_ue',
+                    'desc_ue',
+                    'code_niveau',
+                    'created_at',
+                    'updated_at',
+                ],
+            ]);
     }
 
     /** @test */
@@ -98,9 +97,9 @@ class UeTest extends TestCase
         ]);
 
         $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->deleteJson("/api/Ue/{$ue->code_ue}");
+            ->deleteJson("/api/Ue/{$ue->code_ue}");
 
         $response->assertStatus(200)
-                 ->assertJson(['message' => 'UE supprimé avec succès']);
+            ->assertJson(['message' => 'UE supprimé avec succès']);
     }
 }

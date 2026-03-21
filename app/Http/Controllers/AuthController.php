@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Personnel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Personnel;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -16,13 +14,13 @@ class AuthController extends Controller
             // Validation
             $credentials = $request->validate([
                 'login_pers' => 'required|string',
-                'pwd_pers'   => 'required|string',
+                'pwd_pers' => 'required|string',
             ]);
 
             // Vérification du login
             $personnel = Personnel::where('login_pers', $credentials['login_pers'])->first();
 
-            if (!$personnel || !Hash::check($credentials['pwd_pers'], $personnel->pwd_pers)) {
+            if (! $personnel || ! Hash::check($credentials['pwd_pers'], $personnel->pwd_pers)) {
                 return response()->json(['message' => 'Identifiants invalides'], 401);
             }
 
@@ -33,15 +31,15 @@ class AuthController extends Controller
             $token = $personnel->createToken('auth_token')->plainTextToken;
 
             return response()->json([
-                "personnel"    => $personnel,
+                'personnel' => $personnel,
                 'access_token' => $token,
-                'token_type'   => 'Bearer',
+                'token_type' => 'Bearer',
             ], 200);
 
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'Erreur lors de la connexion',
-                'error'   => $th->getMessage()
+                'error' => $th->getMessage(),
             ], 500);
         }
     }
@@ -56,7 +54,7 @@ class AuthController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'Erreur lors de la déconnexion',
-                'error'   => $th->getMessage()
+                'error' => $th->getMessage(),
             ], 500);
         }
     }
