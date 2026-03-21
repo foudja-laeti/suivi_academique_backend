@@ -16,6 +16,8 @@ COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
 COPY . .
+
+# NE PAS cacher la config — les variables Railway doivent être lues au runtime
 RUN composer dump-autoload --optimize
 
 RUN chown -R www-data:www-data /var/www/html \
@@ -23,4 +25,4 @@ RUN chown -R www-data:www-data /var/www/html \
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "php artisan config:clear && php artisan cache:clear && /init"]
+CMD ["sh", "-c", "php artisan config:clear && php artisan migrate --force && /init"]
