@@ -76,11 +76,10 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Deploy to Railway
-      uses: railway-app/railway-action@v1
-      with:
-        service: ${{ secrets.RAILWAY_SERVICE_ID }}
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+    - name: Deploy to Railway via API
+      run: |
+        curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d '{"query": "mutation { serviceInstanceDeploy(serviceId: \"${{ secrets.RAILWAY_SERVICE_ID }}\") }"}' \
+          https://backboard.railway.com/graphql/v2
