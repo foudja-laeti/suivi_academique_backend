@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Personnel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 
 class PersonnelController extends Controller
