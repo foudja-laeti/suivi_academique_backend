@@ -3,18 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;  
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Ue extends Model
 {
     use HasFactory;
 
     protected $table = 'ues';
-
     protected $primaryKey = 'code_ue';
-
     public $incrementing = false;
-
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -26,13 +23,17 @@ class Ue extends Model
 
     public $timestamps = true;
 
-    // Relation avec le modèle Niveau
+    // ✅ Force le route model binding sur code_ue
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where('code_ue', $value)->firstOrFail();
+    }
+
     public function niveau()
     {
         return $this->belongsTo(Niveau::class, 'code_niveau', 'code_niveau');
     }
 
-    // Relation avec les ECs
     public function ecs()
     {
         return $this->hasMany(Ec::class, 'code_ue', 'code_ue');
