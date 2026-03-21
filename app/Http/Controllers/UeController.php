@@ -41,15 +41,14 @@ class UeController extends Controller
      */
 public function show(Ue $ue)
 {
-    try {
-        return response()->json(['data' => $ue->attributesToArray()], 200);
-    } catch (\Throwable $th) {
-        return response()->json([ // ✅ debug
-            'message' => $th->getMessage(),
-            'file'    => $th->getFile(),
-            'line'    => $th->getLine(),
-        ], 500);
-    }
+    return response()->json(['data' => [
+        'code_ue'    => $ue->code_ue,
+        'label_ue'   => $ue->label_ue,
+        'desc_ue'    => $ue->desc_ue,
+        'code_niveau'=> $ue->code_niveau,
+        'created_at' => $ue->created_at,
+        'updated_at' => $ue->updated_at,
+    ]], 200);
 }
 
 public function update(Request $request, Ue $ue)
@@ -66,13 +65,16 @@ public function update(Request $request, Ue $ue)
         }
         $ue->save();
 
-        return response()->json(['message' => 'UE mis à jour', 'data' => $ue->attributesToArray()], 200);
+        return response()->json(['message' => 'UE mis à jour', 'data' => [
+            'code_ue'    => $ue->code_ue,
+            'label_ue'   => $ue->label_ue,
+            'desc_ue'    => $ue->desc_ue,
+            'code_niveau'=> $ue->code_niveau,
+            'created_at' => $ue->created_at,
+            'updated_at' => $ue->updated_at,
+        ]], 200);
     } catch (\Throwable $th) {
-        return response()->json([ // ✅ debug
-            'message' => $th->getMessage(),
-            'file'    => $th->getFile(),
-            'line'    => $th->getLine(),
-        ], 500);
+        return response()->json(['message' => $th->getMessage(), 'file' => $th->getFile(), 'line' => $th->getLine()], 500);
     }
 }
 
