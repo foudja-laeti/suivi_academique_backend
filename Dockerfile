@@ -3,6 +3,7 @@ FROM serversideup/php:8.4-fpm-nginx
 USER root
 
 RUN apt-get update && apt-get install -y \
+    git curl zip unzip \
     libpng-dev libonig-dev libxml2-dev libzip-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
