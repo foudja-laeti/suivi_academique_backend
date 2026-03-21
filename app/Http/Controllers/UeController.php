@@ -51,16 +51,11 @@ public function show(Ue $ue)
     ]], 200);
 }
 
-public function update(Request $request, Ue $ue)
+public function update(Request $request, $code_ue)
 {
     try {
-        // DEBUG TEMPORAIRE
-        \Log::info('UE reçu:', ['ue' => $ue->toArray(), 'key' => $ue->getKey()]);
+        $ue = Ue::where('code_ue', $code_ue)->firstOrFail();
 
-        $found = Ue::find($ue->getKey());
-        \Log::info('UE trouvé en DB:', ['found' => $found ? $found->toArray() : null]);
-
-        
         $validateData = $request->validate([
             'label_ue'    => 'sometimes|string',
             'desc_ue'     => 'sometimes|nullable|string',
@@ -68,7 +63,7 @@ public function update(Request $request, Ue $ue)
         ]);
 
         $ue->update($validateData);
-        $ue->refresh(); // ← ajoute cette ligne
+        $ue->refresh();
 
         return response()->json(['message' => 'UE mis à jour', 'data' => [
             'code_ue'     => $ue->code_ue,
@@ -87,13 +82,14 @@ public function update(Request $request, Ue $ue)
     }
 }
 
-public function destroy(Ue $ue)
-{
-    try {
-        $ue->delete();
-        return response()->json(['message' => 'UE supprimé avec succès'], 200);
-    } catch (\Throwable $th) {
-        return response()->json(['message' => $th->getMessage()], 500);
+public function destroy($code_ue)
+    {
+        try {
+            $ue = Ue::where('code_ue', $code_ue)->firstOrFail();
+            $ue->delete();
+            return response()->json(['message' => 'UE supprimé avec succès'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
     }
-}
 }
