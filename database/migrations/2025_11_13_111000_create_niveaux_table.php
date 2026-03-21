@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('niveaux', function (Blueprint $table) {
-            $table->increments('code_niveau')->primary();
+            $table->increments('code_niveau');
             $table->string('label_niveau', 100);
             $table->text('desc_niveau', 256)->nullable();
             $table->string('code_filiere', 100);
