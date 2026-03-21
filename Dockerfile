@@ -1,7 +1,8 @@
 FROM php:8.4-apache
 
-# Activer mod_rewrite pour Laravel
-RUN a2enmod rewrite
+# Désactiver les MPM en conflit et activer mpm_prefork
+RUN a2dismod mpm_event mpm_worker 2>/dev/null || true \
+    && a2enmod mpm_prefork rewrite
 
 # Installer dépendances système
 RUN apt-get update && apt-get install -y \
