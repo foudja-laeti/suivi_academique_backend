@@ -23,4 +23,4 @@ RUN chown -R www-data:www-data /var/www/html \
 
 EXPOSE 8080
 
-CMD ["/init"]
+CMD ["sh", "-c", "php artisan config:clear && php artisan migrate --force && exec /init"]
