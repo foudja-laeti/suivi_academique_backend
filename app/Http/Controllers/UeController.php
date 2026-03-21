@@ -61,6 +61,7 @@ public function update(Request $request, Ue $ue)
         ]);
 
         $ue->update($validateData);
+        $ue->refresh(); // ← ajoute cette ligne
 
         return response()->json(['message' => 'UE mis à jour', 'data' => [
             'code_ue'     => $ue->code_ue,
@@ -75,7 +76,6 @@ public function update(Request $request, Ue $ue)
             'message' => $th->getMessage(),
             'file'    => $th->getFile(),
             'line'    => $th->getLine(),
-            'trace'   => $th->getTraceAsString(), // ✅ trace complète
         ], 500);
     }
 }
