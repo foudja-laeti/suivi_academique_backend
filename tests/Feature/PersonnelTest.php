@@ -58,6 +58,10 @@ class PersonnelTest extends TestCase
         $response = $this->withHeaders($this->withApiTokenHeaders())
                          ->putJson("/api/personnels/{$personnel->id}", $updateData);
 
+
+        dump($response->json()); // ← ici
+
+$response->assertStatus(200);
         $response->assertStatus(200)
                  ->assertJsonFragment([
                      'nom_pers'  => 'Jean Mis à Jour',
