@@ -63,8 +63,9 @@ jobs:
         DB_USERNAME: root
         DB_PASSWORD: root
         APP_DEBUG: true
-      run: php artisan test --filter="test_update_ue|test_show_ue|test_update_personnel" -v || true
-
+      run: |
+        php artisan test --filter="test_update_ue|test_update_personnel" 2>&1 || true
+    
     - name: Execute tests
       env:
         DB_CONNECTION: mysql
