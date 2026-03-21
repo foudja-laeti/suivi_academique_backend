@@ -21,5 +21,6 @@ RUN composer dump-autoload --optimize
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 storage bootstrap/cache
 
-ENV PORT=8080
 EXPOSE 8080
+
+CMD ["sh", "-c", "php artisan config:clear && php artisan cache:clear && /init"]
