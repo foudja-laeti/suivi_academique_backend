@@ -38,7 +38,7 @@ jobs:
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
-    - name: Run Linting (Laravel Pint)      # ✅ NOUVEAU
+    - name: Run Linting (Laravel Pint)
       run: ./vendor/bin/pint --test
 
     - name: Generate key
@@ -66,3 +66,6 @@ jobs:
         DB_USERNAME: root
         DB_PASSWORD: root
       run: php artisan test
+
+    - name: Build Docker Image          # ✅ NOUVEAU
+      run: docker compose build
