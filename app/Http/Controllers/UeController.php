@@ -60,10 +60,7 @@ public function update(Request $request, Ue $ue)
             'code_niveau' => 'sometimes|exists:niveaux,code_niveau',
         ]);
 
-        foreach ($validateData as $key => $value) {
-            $ue->$key = $value;
-        }
-        $ue->save();
+        $ue->update($validateData);
 
         return response()->json(['message' => 'UE mis à jour', 'data' => [
             'code_ue'     => $ue->code_ue,

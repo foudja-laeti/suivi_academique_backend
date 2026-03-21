@@ -46,30 +46,25 @@ class PersonnelTest extends TestCase
 
     /** @test */
     public function test_update_personnel()
-    {
-        $personnel = Personnel::factory()->create();
+{
+    $personnel = Personnel::factory()->create();
 
-        $updateData = [
-            'nom_pers'  => 'Jean Mis à Jour',
-            'sexe_pers' => 'Feminin',
-            'type_pers' => 'Utilisateur',
-        ];
+    $updateData = [
+        'nom_pers'  => 'Jean Mis à Jour',
+        'sexe_pers' => 'Feminin',
+        'type_pers' => 'ENSEIGNANT', // ← valeur valide dans l'ENUM
+    ];
 
-        $response = $this->withHeaders($this->withApiTokenHeaders())
-                         ->putJson("/api/personnels/{$personnel->id}", $updateData);
+    $response = $this->withHeaders($this->withApiTokenHeaders())
+                     ->putJson("/api/personnels/{$personnel->id}", $updateData);
 
-
-        dump($response->json());
-
-$response->assertStatus(200);
-        $response->assertStatus(200)
-                 ->assertJsonFragment([
-                     'nom_pers'  => 'Jean Mis à Jour',
-                     'sexe_pers' => 'Feminin',
-                     'type_pers' => 'ENSEIGNANT',
-                 ]);
-    }
-
+    $response->assertStatus(200)
+             ->assertJsonFragment([
+                 'nom_pers'  => 'Jean Mis à Jour',
+                 'sexe_pers' => 'Feminin',
+                 'type_pers' => 'ENSEIGNANT',
+             ]);
+}
     /** @test */
     public function test_show_personnel()
     {
