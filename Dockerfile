@@ -1,5 +1,7 @@
 FROM serversideup/php:8.4-fpm-nginx
 
+USER root
+
 # Installer dépendances système
 RUN apt-get update && apt-get install -y \
     libpng-dev libonig-dev libxml2-dev libzip-dev \
