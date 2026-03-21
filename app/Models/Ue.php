@@ -24,10 +24,10 @@ class Ue extends Model
     public $timestamps = true;
 
     // ✅ Force le route model binding sur code_ue
-    public function resolveRouteBinding($value, $field = null)
-    {
-        return $this->where('code_ue', $value)->firstOrFail();
-    }
+    public function getRouteKeyName(): string
+{
+    return 'code_ue';
+}
 
     public function niveau()
     {
