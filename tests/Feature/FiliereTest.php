@@ -1,8 +1,8 @@
 <?php
 
 use App\Models\Filiere;
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 use Tests\Traits\ApiTokenTrait;
 
 class FiliereTest extends TestCase
