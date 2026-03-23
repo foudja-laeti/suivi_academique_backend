@@ -8,6 +8,12 @@ trait ApiTokenTrait
 {
     protected ?Personnel $authPersonnel = null;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->authPersonnel = null;
+    }
+
     protected function getApiToken(): string
     {
         if (! $this->authPersonnel) {

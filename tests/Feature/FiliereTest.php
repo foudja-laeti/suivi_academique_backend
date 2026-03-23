@@ -2,11 +2,13 @@
 
 use App\Models\Filiere;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\ApiTokenTrait;
 
 class FiliereTest extends TestCase
 {
     use ApiTokenTrait;
+    use RefreshDatabase;
 
     public function test_create_filiere()
     {
