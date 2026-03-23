@@ -67,11 +67,8 @@ jobs:
         DB_PASSWORD: root
       run: php artisan test
 
-    - name: Build Docker Image
-      run: docker compose build
-
-    - name: Push to Docker Hub
+    - name: Build and Push to Docker Hub
       run: |
         echo "${{ secrets.SA_DOKERHUB_TOKEN }}" | docker login -u "${{ secrets.SA_DOCKERHUB_LOGIN }}" --password-stdin
-        docker tag suivie_academinc_backend-app ${{ secrets.SA_DOCKERHUB_LOGIN }}/suivi_academique_backend:latest
+        docker build -t ${{ secrets.SA_DOCKERHUB_LOGIN }}/suivi_academique_backend:latest .
         docker push ${{ secrets.SA_DOCKERHUB_LOGIN }}/suivi_academique_backend:latest
