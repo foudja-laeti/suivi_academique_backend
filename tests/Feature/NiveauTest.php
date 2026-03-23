@@ -1,16 +1,17 @@
 <?php
 
 namespace Tests\Feature;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use App\Models\Filiere;
 use App\Models\Niveau;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\ApiTokenTrait;
 
 class NiveauTest extends TestCase
 {
-    use RefreshDatabase;
     use ApiTokenTrait;
+    use RefreshDatabase;
 
     /** @test */
     public function test_create_niveau()

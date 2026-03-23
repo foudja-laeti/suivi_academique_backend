@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use App\Models\Ec;
 use App\Models\Personnel;
 use App\Models\Programmation;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\Salle;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\ApiTokenTrait;
 
