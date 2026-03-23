@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Ec;
 use App\Models\Personnel;
 use App\Models\Programmation;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\Salle;
 use Tests\TestCase;
 use Tests\Traits\ApiTokenTrait;
@@ -12,6 +13,7 @@ use Tests\Traits\ApiTokenTrait;
 class ProgrammationTest extends TestCase
 {
     use ApiTokenTrait;
+    use RefreshDatabase;
 
     /** @test */
     public function test_create_programmation()
