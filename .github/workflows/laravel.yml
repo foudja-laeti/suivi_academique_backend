@@ -26,11 +26,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
         with:
           php-version: '8.4'
-          extensions: pdo_mysql
+          extensions: pdo_mysql, xdebug
 
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -57,7 +59,7 @@ jobs:
           DB_PASSWORD: root
         run: php artisan migrate --force
 
-      - name: Execute tests
+      - name: Execute tests with coverage
         env:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
@@ -65,10 +67,58 @@ jobs:
           DB_DATABASE: suivi_academique_backend
           DB_USERNAME: root
           DB_PASSWORD: root
-        run: php artisan test
+        run: php artisan test --coverage-clover=coverage.xml
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=foudja-laeti_suivi_academique_backend
+            -Dsonar.organization=foudja-laeti
+            -Dsonar.php.coverage.reportPaths=coverage.xml
+            -Dsonar.sources=app,routes,config
+            -Dsonar.tests=tests
+            -Dsonar.exclusions=vendor/**,node_modules/**,public/**
 
       - name: Build and Push to Docker Hub
         run: |
           echo "${{ secrets.SA_DOKERHUB_TOKEN }}" | docker login -u "${{ secrets.SA_DOCKERHUB_LOGIN }}" --password-stdin
           docker build -t ${{ secrets.SA_DOCKERHUB_LOGIN }}/suivi_academique_backend:latest .
           docker push ${{ secrets.SA_DOCKERHUB_LOGIN }}/suivi_academique_backend:latest
+
+  performance-tests:
+    runs-on: ubuntu-latest
+    needs: laravel-tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install k6
+        run: |
+          curl https://github.com/grafana/k6/releases/download/v0.49.0/k6-v0.49.0-linux-amd64.tar.gz -L | tar xvz
+          sudo mv k6-v0.49.0-linux-amd64/k6 /usr/local/bin
+
+      - name: Start Laravel server
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: /tmp/test.db
+        run: |
+          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php artisan key:generate
+          php artisan migrate --force
+          php artisan serve --host=0.0.0.0 --port=8000 &
+          sleep 5
+
+      - name: Run k6 performance tests
+        run: k6 run tests/performance/load-test.js
+
+      - name: Upload k6 results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: k6-results
+          path: tests/performance/results.json
