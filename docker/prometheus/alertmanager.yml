@@ -1,0 +1,28 @@
+global:
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'ton-email@gmail.com'
+  smtp_auth_username: 'ton-email@gmail.com'
+  smtp_auth_password: 'ton-mot-de-passe-app'
+
+route:
+  group_by: ['alertname', 'severity']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 1h
+  receiver: 'email-notifications'
+  routes:
+    - match:
+        severity: critical
+      receiver: 'email-notifications'
+
+receivers:
+  - name: 'email-notifications'
+    email_configs:
+      - to: 'ton-email@gmail.com'
+        subject: '[ALERTE] {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          Alerte: {{ .Annotations.summary }}
+          Détail: {{ .Annotations.description }}
+          Sévérité: {{ .Labels.severity }}
+          {{ end }}

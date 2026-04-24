@@ -64,7 +64,18 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
         ],
-
+        'logstash' => [
+        'driver'  => 'monolog',
+        'handler' => \Monolog\Handler\SocketHandler::class,
+        'handler_with' => [
+            'connectionString' => 'tcp://logstash:5044',
+        ],
+        'formatter' => \Monolog\Formatter\LogstashFormatter::class,
+        'formatter_with' => [
+            'applicationName' => 'suivi_academique_backend',
+        ],
+        'level' => 'debug',
+    ],
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
