@@ -43,6 +43,26 @@ jobs:
       - name: Run Linting (Laravel Pint)
         run: ./vendor/bin/pint --test
 
+      # ─── DevSecOps : Audit des dépendances PHP ───────────────────────────────
+      - name: "[DevSecOps] Audit des dépendances PHP (Composer)"
+        run: composer audit --no-dev 2>&1 || true
+
+      # ─── DevSecOps : Détection de secrets (Gitleaks) ─────────────────────────
+      - name: "[DevSecOps] Détection de secrets (Gitleaks)"
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ─── DevSecOps : Scan filesystem vulnérabilités (Trivy) ──────────────────
+      - name: "[DevSecOps] Scan vulnérabilités filesystem (Trivy)"
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          severity: 'CRITICAL,HIGH'
+          format: 'table'
+          exit-code: '0'
+
       - name: Generate key
         run: php artisan key:generate
 
@@ -82,6 +102,19 @@ jobs:
             -Dsonar.sources=app,routes,config
             -Dsonar.tests=tests
             -Dsonar.exclusions=vendor/**,node_modules/**,public/**
+
+      # ─── DevSecOps : Scan image Docker (Trivy) ───────────────────────────────
+      - name: "[DevSecOps] Build image Docker (pour scan)"
+        run: docker build -t suivi_academique_backend:scan .
+
+      - name: "[DevSecOps] Scan image Docker (Trivy)"
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'image'
+          image-ref: 'suivi_academique_backend:scan'
+          severity: 'CRITICAL,HIGH'
+          format: 'table'
+          exit-code: '0'
 
       - name: Build and Push to Docker Hub
         run: |
