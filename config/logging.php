@@ -1,6 +1,8 @@
 <?php
 
+use Monolog\Formatter\LogstashFormatter;
 use Monolog\Handler\NullHandler;
+use Monolog\Handler\SocketHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
@@ -65,17 +67,17 @@ return [
             'replace_placeholders' => true,
         ],
         'logstash' => [
-        'driver'  => 'monolog',
-        'handler' => \Monolog\Handler\SocketHandler::class,
-        'handler_with' => [
-            'connectionString' => 'tcp://logstash:5044',
+            'driver' => 'monolog',
+            'handler' => SocketHandler::class,
+            'handler_with' => [
+                'connectionString' => 'tcp://logstash:5044',
+            ],
+            'formatter' => LogstashFormatter::class,
+            'formatter_with' => [
+                'applicationName' => 'suivi_academique_backend',
+            ],
+            'level' => 'debug',
         ],
-        'formatter' => \Monolog\Formatter\LogstashFormatter::class,
-        'formatter_with' => [
-            'applicationName' => 'suivi_academique_backend',
-        ],
-        'level' => 'debug',
-    ],
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
