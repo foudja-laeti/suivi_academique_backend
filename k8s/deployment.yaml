@@ -22,7 +22,7 @@ spec:
       containers:
         - name: laravel
           image: laeti2005/suivi_academique_backend:latest
-          imagePullPolicy: Always  
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080
           env:
@@ -44,6 +44,14 @@ spec:
               value: "laravel"
             - name: DB_PASSWORD
               value: "root"
+            - name: CACHE_STORE
+              value: "file"
+            - name: SESSION_DRIVER
+              value: "file"
+            - name: QUEUE_CONNECTION
+              value: "sync"
+            - name: LOG_CHANNEL
+              value: "stderr"
           resources:
             requests:
               cpu: "100m"
