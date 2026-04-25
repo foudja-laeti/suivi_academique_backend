@@ -33,6 +33,7 @@ jobs:
         with:
           php-version: '8.4'
           extensions: pdo_mysql, xdebug
+          coverage: xdebug
 
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -87,6 +88,7 @@ jobs:
           DB_DATABASE: suivi_academique_backend
           DB_USERNAME: root
           DB_PASSWORD: root
+          XDEBUG_MODE: coverage 
         run: php artisan test --coverage-clover=coverage.xml
 
       - name: SonarCloud Scan
