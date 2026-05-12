@@ -1,4 +1,4 @@
-name: CI-CD ExchaPay (Full Pipeline FTP)
+name: CI-CD suivie-Academique (Full Pipeline FTP)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ "main", "develop" ]
 
 jobs:
-  # --- PARTIE 1 : QUALITÉ, TESTS & SONARQUBE ---
+  # --- PARTIE 1 : QUALITÉ & TESTS (BACKEND) ---
   laravel-tests:
     name: "🛡️ Qualité & Tests (Backend)"
     runs-on: ubuntu-latest
@@ -44,13 +44,6 @@ jobs:
           composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
           echo "✅ Dépendances installées."
 
-      - name: "✨ Vérification Clean Code (Pint)"
-        working-directory: ./Backend
-        run: |
-          echo "🧐 Analyse du style de code avec Laravel Pint..."
-          ./vendor/bin/pint --test
-        continue-on-error: true
-
       - name: "🧪 Exécution des Tests"
         working-directory: ./Backend
         env:
@@ -62,15 +55,9 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
-          echo "🏃 Lancement des tests unitaires et feature..."
+          echo "🏃 Lancement des tests..."
           php artisan test
           echo "✅ Tests terminés."
-
-      # - name: "🛡️ Scan SonarCloud"
-      #   uses: sonarsource/sonarqube-scan-action@v3
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   # --- PARTIE 2 : BUILD FRONTEND ---
   frontend-build:
@@ -91,12 +78,12 @@ jobs:
       - name: "🏗️ Build Vite"
         working-directory: ./Frontend
         run: |
-          echo "📦 Installation des modules npm..."
+          echo "📦 Installation npm..."
           npm install
-          echo "🛠️ Lancement du Build de production..."
+          echo "🛠️ Build de production..."
           npm run build
-          echo "📂 Structure du dossier dist :"
-          ls -R dist/
+          echo "📂 Vérification du dossier dist :"
+          ls -la dist/
 
       - name: "📤 Archivage du Build"
         uses: actions/upload-artifact@v4
@@ -104,7 +91,7 @@ jobs:
           name: frontend-dist
           path: Frontend/dist/
 
-  # --- PARTIE 3 : DOCKER HUB (Optionnel pour o2switch) ---
+  # --- PARTIE 3 : DOCKER HUB ---
   docker-hub:
     name: "🐳 Build & Push Docker"
     needs: laravel-tests
@@ -128,13 +115,11 @@ jobs:
             ${{ secrets.SA_DOCKERHUB_LOGIN}}/exchapay-backend:latest
             ${{ secrets.SA_DOCKERHUB_LOGIN}}/exchapay-backend:${{ github.sha }}
 
-  # --- PARTIE 4 : DÉPLOIEMENT O2SWITCH (FTP PORT 21) ---
+  # --- PARTIE 4 : DÉPLOIEMENT O2SWITCH ---
   deploy-o2switch:
     name: "🚀 Déploiement o2switch (FTP)"
     needs: [frontend-build] 
-    if: |
-      github.event_name == 'push' && 
-      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     runs-on: ubuntu-latest
     
     steps:
@@ -147,19 +132,29 @@ jobs:
           name: frontend-dist
           path: ./dist-frontend
 
+      - name: "🔍 DEBUG : Inspection des dossiers locaux avant FTP"
+        run: |
+          echo "--- CONTENU RACINE ---"
+          ls -F
+          echo "--- CONTENU BACKEND (Source) ---"
+          if [ -d "./Backend" ]; then ls -la ./Backend; else echo "❌ Dossier ./Backend introuvable !"; fi
+          echo "--- CONTENU FRONTEND DIST (Source) ---"
+          if [ -d "./dist-frontend" ]; then ls -la ./dist-frontend; else echo "❌ Dossier ./dist-frontend introuvable !"; fi
+
       - name: "🚀 Déploiement Backend via FTP"
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # On déploie directement dans les sous-dossiers du compte projetExchaPay
           local-dir: ./Backend/
           server-dir: Backend_Code/
+          log-level: verbose
           exclude: |
             **/vendor/**
             **/.env
             **/.git*
+            **/node_modules/**
 
       - name: "🚀 Déploiement Frontend via FTP"
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -169,13 +164,10 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist-frontend/
           server-dir: Frontend_Public/
+          log-level: verbose
 
       - name: "✨ Logs de fin"
         run: |
-          echo "✅ Déploiement FTP terminé avec succès !!!!"
+          echo "✅ Déploiement FTP terminé."
           echo "🔗 URL : https://foudja.cdwfs.net"
-          echo "🕒 Heure : $(date)"
-          echo "🆔 Commit : ${{ github.sha }}"
-
-
-#
+          echo "🕒 $(date)"
