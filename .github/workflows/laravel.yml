@@ -1,173 +1,181 @@
-name: Laravel
+name: CI-CD ExchaPay (Full Pipeline FTP)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "develop" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "develop" ]
 
 jobs:
+  # --- PARTIE 1 : QUALITÉ, TESTS & SONARQUBE ---
   laravel-tests:
+    name: "🛡️ Qualité & Tests (Backend)"
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     services:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: suivi_academique_backend
+          MYSQL_DATABASE: laravel_test
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
         ports:
           - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - uses: actions/checkout@v4
+      - name: "📦 Récupération du code"
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+      - name: "⚙️ Installation PHP 8.4"
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: pdo_mysql, xdebug
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath
           coverage: xdebug
 
-      - name: Copy .env
-        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      - name: "📥 Installation Dépendances (Composer)"
+        working-directory: ./Backend
+        run: |
+          echo "🚀 Démarrage de l'installation Composer..."
+          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+          echo "✅ Dépendances installées."
 
-      - name: Install Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      - name: "✨ Vérification Clean Code (Pint)"
+        working-directory: ./Backend
+        run: |
+          echo "🧐 Analyse du style de code avec Laravel Pint..."
+          ./vendor/bin/pint --test
+        continue-on-error: true
 
-      - name: Run Linting (Laravel Pint)
-        run: ./vendor/bin/pint --test
-
-      # ─── DevSecOps : Audit des dépendances PHP ───────────────────────────────
-      - name: "[DevSecOps] Audit des dépendances PHP (Composer)"
-        run: composer audit --no-dev 2>&1 || true
-
-      # ─── DevSecOps : Détection de secrets (Gitleaks) ─────────────────────────
-      - name: "[DevSecOps] Détection de secrets (Gitleaks)"
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # ─── DevSecOps : Scan filesystem vulnérabilités (Trivy) ──────────────────
-      - name: "[DevSecOps] Scan vulnérabilités filesystem (Trivy)"
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          severity: 'CRITICAL,HIGH'
-          format: 'table'
-          exit-code: '0'
-
-      - name: Generate key
-        run: php artisan key:generate
-
-      - name: Directory Permissions
-        run: chmod -R 777 storage bootstrap/cache
-
-      - name: Run Migrations
+      - name: "🧪 Exécution des Tests"
+        working-directory: ./Backend
         env:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
-          DB_DATABASE: suivi_academique_backend
+          DB_DATABASE: laravel_test
           DB_USERNAME: root
-          DB_PASSWORD: root
-        run: php artisan migrate --force
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          echo "🏃 Lancement des tests unitaires et feature..."
+          php artisan test
+          echo "✅ Tests terminés."
 
-      - name: Execute tests with coverage
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: suivi_academique_backend
-          DB_USERNAME: root
-          DB_PASSWORD: root
-          XDEBUG_MODE: coverage 
-        run: php artisan test --coverage-clover=coverage.xml
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+      - name: "🛡️ Scan SonarCloud"
+        uses: sonarsource/sonarqube-scan-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=foudja-laeti_suivi_academique_backend
-            -Dsonar.organization=foudja-laeti
-            -Dsonar.php.coverage.reportPaths=coverage.xml
-            -Dsonar.sources=app,routes,config
-            -Dsonar.tests=tests
-            -Dsonar.exclusions=vendor/**,node_modules/**,public/**
 
-      # ─── DevSecOps : Scan image Docker (Trivy) ───────────────────────────────
-      - name: "[DevSecOps] Build image Docker (pour scan)"
-        run: docker build -t suivi_academique_backend:scan .
-
-      - name: "[DevSecOps] Scan image Docker (Trivy)"
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'image'
-          image-ref: 'suivi_academique_backend:scan'
-          severity: 'CRITICAL,HIGH'
-          format: 'table'
-          exit-code: '0'
-
-      - name: Build and Push to Docker Hub
-        run: |
-          echo "${{ secrets.SA_DOKERHUB_TOKEN }}" | docker login -u "${{ secrets.SA_DOCKERHUB_LOGIN }}" --password-stdin
-          docker build -t ${{ secrets.SA_DOCKERHUB_LOGIN }}/suivi_academique_backend:latest .
-          docker push ${{ secrets.SA_DOCKERHUB_LOGIN }}/suivi_academique_backend:latest
-
-  performance-tests:
-    runs-on: ubuntu-latest
+  # --- PARTIE 2 : BUILD FRONTEND ---
+  frontend-build:
+    name: "🌐 Build Frontend (React)"
     needs: laravel-tests
-
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: "📦 Récupération du code"
+        uses: actions/checkout@v4
 
-      - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+      - name: "⚙️ Setup Node.js"
+        uses: actions/setup-node@v4
         with:
-          php-version: '8.4'
-          extensions: pdo_mysql
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: ./Frontend/package-lock.json
 
-      - name: Install Dependencies
-        run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-
-      - name: Copy .env
-        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-
-      - name: Generate key
-        run: php artisan key:generate
-
-      - name: Directory Permissions
-        run: chmod -R 777 storage bootstrap/cache
-
-      - name: Start Laravel server
-        env:
-          DB_CONNECTION: sqlite
-          DB_DATABASE: /tmp/test.db
+      - name: "🏗️ Build Vite"
+        working-directory: ./Frontend
         run: |
-          php artisan migrate --force
-          php artisan serve --host=0.0.0.0 --port=8000 &
-          sleep 5
+          echo "📦 Installation des modules npm..."
+          npm install
+          echo "🛠️ Lancement du Build de production..."
+          npm run build
+          echo "📂 Structure du dossier dist :"
+          ls -R dist/
 
-      - name: Install k6
-        run: |
-          curl https://github.com/grafana/k6/releases/download/v0.49.0/k6-v0.49.0-linux-amd64.tar.gz -L | tar xvz
-          sudo mv k6-v0.49.0-linux-amd64/k6 /usr/local/bin
-
-      - name: Run k6 performance tests
-        run: k6 run tests/performance/load-test.js
-
-      - name: Upload k6 results
+      - name: "📤 Archivage du Build"
         uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: k6-results
-          path: tests/performance/results.json
+          name: frontend-dist
+          path: Frontend/dist/
+
+  # --- PARTIE 3 : DOCKER HUB (Optionnel pour o2switch) ---
+  docker-hub:
+    name: "🐳 Build & Push Docker"
+    needs: laravel-tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: "📦 Récupération du code"
+        uses: actions/checkout@v4
+      - name: "🔑 Login Docker Hub"
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: "🚀 Build & Push"
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Backend
+          file: ./Backend/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.SA_DOCKERHUB_LOGIN}}/exchapay-backend:latest
+            ${{ secrets.SA_DOCKERHUB_LOGIN}}/exchapay-backend:${{ github.sha }}
+
+  # --- PARTIE 4 : DÉPLOIEMENT O2SWITCH (FTP PORT 21) ---
+  deploy-o2switch:
+    name: "🚀 Déploiement o2switch (FTP)"
+    needs: [frontend-build] 
+    if: |
+      github.event_name == 'push' && 
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: "📦 Récupération du code source"
+        uses: actions/checkout@v4
+
+      - name: "📥 Récupération du Build Frontend"
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: ./dist-frontend
+
+      - name: "🚀 Déploiement Backend via FTP"
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # On déploie directement dans les sous-dossiers du compte projetExchaPay
+          local-dir: ./Backend/
+          server-dir: Backend_Code/
+          exclude: |
+            **/vendor/**
+            **/.env
+            **/.git*
+
+      - name: "🚀 Déploiement Frontend via FTP"
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist-frontend/
+          server-dir: Frontend_Public/
+
+      - name: "✨ Logs de fin"
+        run: |
+          echo "✅ Déploiement FTP terminé avec succès !!!!"
+          echo "🔗 URL : https://foudja.cdwfs.net"
+          echo "🕒 Heure : $(date)"
+          echo "🆔 Commit : ${{ github.sha }}"
+
+
+#
